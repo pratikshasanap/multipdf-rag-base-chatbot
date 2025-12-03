@@ -5,8 +5,20 @@ import os
 from typing import Any, Optional
 
 from dotenv import load_dotenv
-import fitz
-from flashrank import Ranker, RerankRequest
+try:
+    import fitz
+except ImportError:
+    fitz = None
+
+try:
+    from flashrank import Ranker, RerankRequest
+except ImportError:
+    Ranker, RerankRequest = None, None
+
+try:
+    import pypdf
+except ImportError:
+    pypdf = None
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
@@ -145,11 +157,28 @@ def extract_documents_from_pdf(
     Returns:
         List of LangChain Document objects with source and page_number metadata.
     """
-    try:
-        content_bytes = file_obj.read()
-        doc = fitz.open(stream=content_bytes, filetype="pdf")
-    except Exception as e:
-        raise RuntimeError(f"Failed to open PDF '{filename}': {e}") from e
+    content_bytes = file_obj.read() if hasattr(file_obj, 'read') else file_obj
+    pages_data = []
+
+    if fitz is not None:
+        try:
+            doc = fitz.open(stream=content_bytes, filetype="pdf")
+            for page_num, page in enumerate(doc, start=1):
+                pages_data.append((page_num, page.get_text("text")))
+        except Exception as e:
+            logger.warning("PyMuPDF failed to extract '%s': %s. Trying pypdf fallback.", filename, e)
+            pages_data = []
+
+    if not pages_data and pypdf is not None:
+        import io
+        try:
+            reader = pypdf.PdfReader(io.BytesIO(content_bytes))
+            for page_num, page in enumerate(reader.pages, start=1):
+                pages_data.append((page_num, page.extract_text() or ""))
+        except Exception as e:
+            raise RuntimeError(f"Failed to open PDF '{filename}' with pypdf: {e}") from e
+    elif not pages_data and fitz is None:
+        raise RuntimeError("No PDF extraction library available (neither PyMuPDF nor pypdf found).")
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -160,8 +189,7 @@ def extract_documents_from_pdf(
     documents: list[Document] = []
     chunk_counter = 0
 
-    for page_num, page in enumerate(doc, start=1):
-        page_text = page.get_text("text")
+    for page_num, page_text in pages_data:
         if not page_text.strip():
             continue
 
