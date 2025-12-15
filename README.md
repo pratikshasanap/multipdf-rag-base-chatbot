@@ -3,11 +3,9 @@
 > **Sub-second, Production-Grade RAG Engine with Pre-Cached Vector Indexing, Page-Aware Chunking, Dual Dense-Sparse Retrieval, FlashRank Re-ranking, and Groq Llama 3.1 8B Instant Inference.**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-success?style=for-the-badge&logo=vercel)](https://pratiksha-sanap-multi-pdf-advanced.vercel.app/)
-[![YouTube Demo](https://img.shields.io/badge/YouTube-Video%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/bh_6XDT8_zY)
 [![Groq API](https://img.shields.io/badge/LLM-Groq%20Llama%203.1%208B-orange?style=for-the-badge)](https://pratiksha-sanap-multi-pdf-advanced.vercel.app/)
 
 🌐 **Live Production App**: [https://pratiksha-sanap-multi-pdf-advanced.vercel.app/](https://pratiksha-sanap-multi-pdf-advanced.vercel.app/)  
-🎬 **YouTube Video Demo**: [https://youtu.be/bh_6XDT8_zY](https://youtu.be/bh_6XDT8_zY)
 
 ---
 
@@ -18,6 +16,7 @@ This repository features a **State-of-the-Art (SOTA) Multi-PDF Q&A RAG Engine** 
 The project features a **ChatGPT-style React Frontend** with **Citation Inspection Modals**, an automated **Vector Pre-Indexing Pipeline** (`ingest.py`), and a **FastAPI REST API** ready for **Vercel Serverless Deployment**.
 
 ---
+
 
 ## 🏗️ System Architecture
 
